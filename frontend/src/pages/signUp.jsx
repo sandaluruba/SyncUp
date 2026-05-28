@@ -38,7 +38,7 @@ function SignUp() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12 mt-10">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center mb-8">
             <div className='flex flex-col items-center gap-2 group'>

@@ -46,5 +46,19 @@ export const useAuthStore = create((set) => ({
             console.log("Error logging out:", error);
             toast.error("Failed to log out");
         }
+    },
+
+    logIn: async (formData) => {
+        set({ isLoggingIn: true });
+        try{
+            const res = await instance.post("/auth/login", formData);
+            set({authUser: res.data});
+            toast.success("Logged in successfully");
+        } catch(error) {
+            console.log("Error logging in:", error);
+            toast.error("Failed to log in");
+        } finally{
+            set({ isLoggingIn: false });
+        }
     }
 }));
