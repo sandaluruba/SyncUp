@@ -14,7 +14,7 @@ export const useAuthStore = create((set) => ({
     checkAuth: async () => {
         try {
             const res = await instance.get("/auth/check");
-            set({ authUser: res.data.user });
+            set({ authUser: res.data });
         } catch (error) {
             console.error("Error checking auth:", error);
             set({ authUser: null });
@@ -38,11 +38,11 @@ export const useAuthStore = create((set) => ({
     },
 
     logOut: async () => {
-        try{
+        try {
             const res = await instance.post("/auth/logout");
-            set({authUser: null});
+            set({ authUser: null });
             toast.success("Logged out successfully");
-        } catch(error) {
+        } catch (error) {
             console.log("Error logging out:", error);
             toast.error("Failed to log out");
         }
@@ -50,15 +50,30 @@ export const useAuthStore = create((set) => ({
 
     logIn: async (formData) => {
         set({ isLoggingIn: true });
-        try{
+        try {
             const res = await instance.post("/auth/login", formData);
-            set({authUser: res.data});
+            set({ authUser: res.data });
             toast.success("Logged in successfully");
-        } catch(error) {
+        } catch (error) {
             console.log("Error logging in:", error);
             toast.error("Failed to log in");
-        } finally{
+        } finally {
             set({ isLoggingIn: false });
         }
+    },
+
+    updateProfile: async (data) => {
+        set({ isUpdatingProfile: true });
+        try {
+            const res = await instance.put("/auth/updateProfile", data);
+            set({ authUser: res.data });
+            toast.success("Profile updated successfully");
+
+        } catch (error) { 
+            console.log("Error updating profile:", error);
+            toast.error("Failed to update profile");
+        } finally {
+            set({ isUpdatingProfile: false });
+         }
     }
 }));

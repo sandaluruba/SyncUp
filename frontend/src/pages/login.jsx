@@ -51,7 +51,7 @@ return (
                 className={`input input-bordered w-full pl-10`}
                 placeholder='john@example.com'
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value.toLowerCase() })}
               />
             </div>
           </div>
