@@ -1,7 +1,7 @@
 import User from '../models/user.model.js';
 import { generateToken } from '../lib/utils.js';
 import bcrypt from 'bcryptjs';
-import cloudinary from 'cloudinary';
+import cloudinary from '../lib/cloudinary.js';
 
 export const signup = async (req, res) => {
     const { email, fullName, password } = req.body;
@@ -76,7 +76,8 @@ export const login = async (req, res) => {
             _id: user._id,
             fullName: user.fullName,
             email: user.email,
-            profilePicture: user.profilePicture
+            profilePicture: user.profilePicture,
+            createdAt: user.createdAt
         });
     } catch (error) {
         console.log("Login error:", error);
