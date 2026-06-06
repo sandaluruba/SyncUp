@@ -5,9 +5,11 @@ import { useEffect } from 'react';
 import ChatHeader from './ChatHeader.jsx';
 import MessageInput from './MessageInput.jsx';
 import MessageSkeleton from './Skeletons/MessageSkeleton.jsx';
+import { useAuthStore } from '../store/useAuthStore.js';
 
 function ChatWindow() {
     const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
+    const {authUser} = useAuthStore();
 
     useEffect(() => {
         getMessages(selectedUser._id)
@@ -29,7 +31,36 @@ function ChatWindow() {
     <div className='flex-1 flex flex-col overflowe-auto'>
         <ChatHeader />
         
-        <p>Messages...</p>
+        <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+            {messages.map((msg) => (
+                <div
+                key={msg._id}
+                className={`chat ${msg.senderId === authUser._id ? "chat-end" : "chat-start"}`}>
+                    <div className='chat-image avatar'>
+                        <div className='size-10 rounded-full border'>
+                            <img src={msg.senderId === authUser._id ? authUser.profilePicture || "/avatar.png" : selectedUser.profilePicture || "/avatar.png"} alt="Profile Picture"/>
+                        </div>
+                    </div>
+                    <div className='chat-header mb-1'>
+                        <time className='text-sm opacity-50 ml-1'>
+                            {msg.createdAt}
+                        </time>
+                    </div>
+                    <div className='chat-bubble flex'>
+                        {msg.image && (
+                            <img 
+                            src={msg.image}
+                            alt="Message Attachment"
+                            className="sm:max-w-[200px] rounded-md mb-2"
+                            />
+                        )}
+                        {msg.message && (
+                            <p>{msg.message}</p>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
 
         <MessageInput />
     </div>
