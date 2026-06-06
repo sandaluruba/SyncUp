@@ -6,6 +6,7 @@ import ChatHeader from './ChatHeader.jsx';
 import MessageInput from './MessageInput.jsx';
 import MessageSkeleton from './Skeletons/MessageSkeleton.jsx';
 import { useAuthStore } from '../store/useAuthStore.js';
+import { formatMessageTime } from '../lib/utils.js';
 
 function ChatWindow() {
     const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
@@ -43,10 +44,10 @@ function ChatWindow() {
                     </div>
                     <div className='chat-header mb-1'>
                         <time className='text-sm opacity-50 ml-1'>
-                            {msg.createdAt}
+                            {formatMessageTime(msg.createdAt)}
                         </time>
                     </div>
-                    <div className='chat-bubble flex'>
+                    <div className='chat-bubble flex flex-col'>
                         {msg.image && (
                             <img 
                             src={msg.image}

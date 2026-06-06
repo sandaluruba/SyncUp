@@ -2,13 +2,17 @@ import { create } from "zustand";
 import instance from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { LogOut } from "lucide-react";
+import { io } from "socket.io-client";
 
-export const useAuthStore = create((set) => ({
+const BASE_URL = "http://localhost:5000";
+
+export const useAuthStore = create((set, get) => ({
     authUser: null,
     isSignInUp: false,
     isLoggingIn: false,
     isUpdatingProfile: false,
     onlineUsers: [],
+    socket: null,
 
     isCheckingAuth: true,
 
@@ -16,6 +20,7 @@ export const useAuthStore = create((set) => ({
         try {
             const res = await instance.get("/auth/check");
             set({ authUser: res.data });
+            get().connectSocket();
         } catch (error) {
             console.error("Error checking auth:", error);
             set({ authUser: null });
@@ -30,6 +35,7 @@ export const useAuthStore = create((set) => ({
             const res = await instance.post("/auth/signup", formData);
             set({ authUser: res.data });
             toast.success("Account created successfully");
+            get().connectSocket();
         } catch (error) {
             console.error("Error signing up:", error);
             toast.error(error.response.data.message || "Failed to create account");
@@ -43,6 +49,7 @@ export const useAuthStore = create((set) => ({
             const res = await instance.post("/auth/logout");
             set({ authUser: null });
             toast.success("Logged out successfully");
+            get().disConnectSocket();
         } catch (error) {
             console.log("Error logging out:", error);
             toast.error("Failed to log out");
@@ -55,6 +62,7 @@ export const useAuthStore = create((set) => ({
             const res = await instance.post("/auth/login", formData);
             set({ authUser: res.data });
             toast.success("Logged in successfully");
+            get().connectSocket();
         } catch (error) {
             console.log("Error logging in:", error);
             toast.error("Failed to log in");
@@ -70,11 +78,32 @@ export const useAuthStore = create((set) => ({
             set({ authUser: res.data });
             toast.success("Profile updated successfully");
 
-        } catch (error) { 
+        } catch (error) {
             console.log("Error updating profile:", error);
             toast.error("Failed to update profile");
         } finally {
             set({ isUpdatingProfile: false });
-         }
+        }
+    },
+
+    connectSocket: () => {
+        const { authUser } = get();
+        if (!authUser || get().socket?.connected) return;
+
+        const socket = io(BASE_URL, {
+            query: {
+                userId: authUser._id,
+            },
+        });
+        socket.connect();
+        set({ socket: socket });
+
+        socket.on("getOnlineUsers", (userIds) => {
+            set({onlineUsers: userIds});
+        })
+    },
+
+    disConnectSocket: () => {
+        if(get().socket.connected) get().socket.disconnect();
     }
 }));
