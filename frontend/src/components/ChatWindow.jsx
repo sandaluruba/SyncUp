@@ -9,12 +9,16 @@ import { useAuthStore } from '../store/useAuthStore.js';
 import { formatMessageTime } from '../lib/utils.js';
 
 function ChatWindow() {
-    const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
+    const {messages, getMessages, isMessagesLoading, selectedUser, getSocketMessages, offGetSocketMessages} = useChatStore();
     const {authUser} = useAuthStore();
 
     useEffect(() => {
-        getMessages(selectedUser._id)
-    }, [selectedUser._id, getMessages])
+        getMessages(selectedUser._id);
+
+        getSocketMessages();
+
+        return () => offGetSocketMessages();
+    }, [selectedUser._id, getMessages, getSocketMessages, offGetSocketMessages]);
 
     if(isMessagesLoading) {
         return (
